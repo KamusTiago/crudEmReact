@@ -1,29 +1,46 @@
-import React, {createContext, useReducer} from "react";
+import React, { createContext, useReducer } from "react";
 import users from "../data/users";
 
-const initialState = {users}
+const initialState = { users }
 const UsersContext = createContext({})
 
 const actions = {
-    deleteUser(state, action){
+    createUser(state, action) {
         const user = action.payload
-            return {
-                // ...state,
-                users: state.users.filter(u => u.id !== user.id)
-            }
+        user.id = Math.random()
+        return {
+            ...state,
+            users: [...state.users, user],
+        }
+    },
+
+    updateUser(state, action) {
+        const updated = action.payload
+        return {
+            ...state,
+            users: state.users.map(u => u.id === updated ? updated : u)
+        }
+    },
+
+    deleteUser(state, action) {
+        const user = action.payload
+        return {
+            ...state,
+            users: state.users.filter(u => u.id !== user.id)
+        }
     }
 }
 
 export const UsersProvide = props => {
 
-    function reducer(state, action){
-        const fn = actions[action.type]  
+    function reducer(state, action) {
+        const fn = actions[action.type]
         return fn ? fn(state, action) : state
     }
 
-   const [state, dispatch] = useReducer(reducer, initialState)
+    const [state, dispatch] = useReducer(reducer, initialState)
 
-    return(
+    return (
         <UsersContext.Provider value={{
             state, dispatch
         }}>
